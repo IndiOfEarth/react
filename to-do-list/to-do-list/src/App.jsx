@@ -78,6 +78,7 @@ export default function App() {
   const [input, setInput] = useState('');
   const [didLoad, setDidLoad] = useState(false);
   const [dueDate, setDueDate] = useState('');
+  const [filter, setFilter] = useState('all');
 
   // useEffect hook
   useEffect(() => {
@@ -99,8 +100,11 @@ export default function App() {
     // Handles edge case - no input
     if (input.trim() === '') return;
 
-    // each new todo has a id, text, and completed attribute
-    const newTodo = { id: Date.now(), text: input, completed: false, dueDate: dueDate || null };
+    // each new todo object has an id, text, and completed attribute
+    const newTodo = { id: Date.now(), 
+                      text: input, 
+                      completed: false, 
+                      dueDate: dueDate || null };
     setTodos([...todos, newTodo]);
     setInput('');
     setDueDate('');    
@@ -137,9 +141,21 @@ export default function App() {
     setTodos(updatedTodos);
   };
 
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'completed') return todo.completed;
+    if (filter === 'incomplete') return !todo.completed;
+    return true; // all
+  });
+
   return (
     <div style={{ padding: '2rem' }}>
       <h1>To Do Idiot</h1>
+
+      <div style={{ margin: '1rem 0' }}>
+        <button onClick={() => setFilter('all')}>All</button>
+        <button onClick={() => setFilter('completed')}>Completed</button>
+        <button onClick={() => setFilter('incomplete')}>Incomplete</button>
+      </div>
 
       <InputForm 
         input={input} 
@@ -151,7 +167,7 @@ export default function App() {
       <button onClick={handleAddTodo}>Add</button>
 
       <ul>
-        {todos.map(todo => (
+        {filteredTodos.map(todo => (
           // Creates the TodoItem li component
           <TodoItem
             key={todo.id}
